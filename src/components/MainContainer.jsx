@@ -1,12 +1,9 @@
 import DocumentCard from "./DocumentCard"
 
-function MainContainer(){
+function MainContainer({posts}){
     return (
-        <section class="container">
-            <DocumentCard></DocumentCard>
-            <DocumentCard></DocumentCard>
-            <DocumentCard></DocumentCard>
-            <DocumentCard></DocumentCard>
+        <section className="container">
+            {posts.map((o,i)=><DocumentCard key={o[0]} ecnID={o[0]} title={o[1]}></DocumentCard>)}
         </section>
     )
 }
