@@ -8,23 +8,23 @@ function App() {
   const [documents,setDocuments] = useState([])
 
   useEffect(()=>{
-    console.log('in effect')
-    fetch('http://localhost:5000/document').
+    console.log('in effect',navlink)
+    fetch('http://localhost:5000/document/'+navlink).
     then(response =>{
       if(response.ok){
         return response.json();
       }
     })
     .then(data => setDocuments(data));
-  },[]);
+  },[navlink]);
 
   // console.log('posts',documents);
   // documents.map((o,i)=>console.log(o.Document.doc_id));
 
   return (
     <>
-    <Navbar></Navbar>
-    <MainContainer documents={documents}></MainContainer>
+    <Navbar setNavLink={setNavLink}></Navbar>
+    <MainContainer documents={documents} setNavLink={setNavLink}></MainContainer>
     </>
   )
 }

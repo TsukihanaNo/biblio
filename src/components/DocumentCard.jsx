@@ -1,8 +1,8 @@
-function DocumentCard({ecnID, title, author, status, released_on, last_modified, stage}){
+function DocumentCard({ecnID, title, author, status, released_on, last_modified, stage,setNavLink}){
     return (
         <article className="card mb-3">
             <header>
-                <div className="card-header text-bg-primary"><a className="text-bg-primary" href="{{ url_for('document.update', id=post['doc_id']) }}">{ecnID} : {title}</a></div>
+                <div className="card-header text-bg-primary"><a className="text-bg-primary" onClick={()=>setNavLink("view/"+ecnID)}>{ecnID} : {title}</a></div>
                 <div className="card-body">
                     <div className="container">
                         <div className="row">
