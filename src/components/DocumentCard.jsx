@@ -1,4 +1,4 @@
-function DocumentCard({ecnID, title}){
+function DocumentCard({ecnID, title, author, status, released_on, last_modified, stage}){
     return (
         <article className="card mb-3">
             <header>
@@ -6,14 +6,14 @@ function DocumentCard({ecnID, title}){
                 <div className="card-body">
                     <div className="container">
                         <div className="row">
-                        <div className="col-3">Author: </div>
-                        <div className="col-3">Status: </div>
-                        <div className="col-3">Released on: </div>
-                        <div className="col-3">Completed Days:  </div>
+                        <div className="col-3">Author: {author}</div>
+                        <div className="col-3">Status: {status}</div>
+                        <div className="col-3">Released on: {released_on}</div>
+                        <div className="col-3">Completed Days: </div>
                     </div>
                     <div className="row">
-                        <div className="col-3">Last Modified: </div>
-                        <div className="col-3">Stage: </div>
+                        <div className="col-3">Last Modified: {last_modified}</div>
+                        <div className="col-3">Stage: {stage}</div>
                         <div className="col-6">Waiting On: </div>
                     </div>
                 </div>
