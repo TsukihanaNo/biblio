@@ -117,7 +117,7 @@ def get_document(id):
     documents = cursor.fetchall()
     document_list = []
     for document in documents:
-        doc = Document(document['doc_id'], document['doc_title'], document['author'], document['status'], document['first_release'], document['last_modified'],document['stage'],document['requestor'],document['doc_type'],document['department'],document['doc_reason_code'],html2text.html2text(document['doc_reason']),html2text.html2text(document['doc_summary']))
+        doc = Document(document['doc_id'], document['doc_title'], document['author'], document['status'], document['first_release'], document['last_modified'],document['stage'],document['requestor'],document['doc_type'],document['department'],document['doc_reason_code'],html2text.html2text(document['doc_reason']),html2text.html2text(document['doc_summary']),document['comp_date'],document['comp_days'],)
         document_list.append(doc)
     json_str = jsonify([d.toJSON() for d in document_list])
     return json_str

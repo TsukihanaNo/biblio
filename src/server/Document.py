@@ -1,5 +1,5 @@
 class Document:
-    def __init__(self,doc_id, doc_title, author, status, released_on, last_modified,stage, requestor, doc_type,department,reason_code,reason,summary,completed_days=0,elapsed_days=0,waiting_on=""):
+    def __init__(self,doc_id, doc_title, author, status, released_on, last_modified,stage, requestor, doc_type,department,reason_code,reason,summary,comp_date="",completed_days=0,elapsed_days=0,waiting_on=""):
         self.doc_id =doc_id
         self.doc_title = doc_title
         self.author = author
@@ -13,6 +13,7 @@ class Document:
         self.reason_code = reason_code
         self.reason = reason
         self.summary = summary
+        self.comp_date = comp_date
         self.commpleted_days = completed_days
         self.elapsed_days = elapsed_days
         self.waiting_on = waiting_on
@@ -31,6 +32,7 @@ class Document:
                             'reason_code':self.reason_code,
                             'reason':self.reason,
                             'summary':self.summary,
+                            'comp_date':self.comp_date,
                             'completed_days':self.commpleted_days,
                             'elapsed_days':self.elapsed_days,
                             'waiting_on':self.waiting_on}}
