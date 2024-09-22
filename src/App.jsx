@@ -23,7 +23,7 @@ function App() {
 
   return (
     <>
-    <Navbar setNavLink={setNavLink}></Navbar>
+    <Navbar navlink={navlink} setNavLink={setNavLink}></Navbar>
     <MainContainer documents={documents} setNavLink={setNavLink}></MainContainer>
     </>
   )

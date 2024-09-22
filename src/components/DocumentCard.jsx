@@ -2,7 +2,7 @@ function DocumentCard({ecnID, title, author, status, released_on, last_modified,
     return (
         <article className="card mb-3">
             <header>
-                <div className="card-header text-bg-primary"><a className="text-bg-primary" onClick={()=>setNavLink("view/"+ecnID)}>{ecnID} : {title}</a></div>
+                <div className="card-header text-bg-primary"><a className="btn text-bg-primary" onClick={()=>setNavLink("view/"+ecnID)}>{ecnID} : {title}</a></div>
                 <div className="card-body">
                     <div className="container">
                         <div className="row">

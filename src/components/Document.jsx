@@ -1,12 +1,25 @@
+import { useEffect, useState } from "react";
+import Part from "./Part"
+
 function Document ({documents}){
-    console.log('documents',documents[0].Document)
+    const [parts,setParts] = useState([])
+    // console.log('documents',documents[0].Document)
     const document =documents[0].Document
+    useEffect(()=>{
+        console.log('in effect, getting part',document.doc_id)
+        fetch('http://localhost:5000/part/'+document.doc_id+'/get').
+        then(response =>{
+        if(response.ok){
+            return response.json();
+        }
+        })
+        .then(data => setParts(data));
+    },[document.doc_id]);
     return (
-        <div className="container">
             <div className="card mb-3">
                 <h1 className="card-header text-bg-primary">{document.doc_id}</h1>
                 <form className="card-body">
-                    <h4 className="text-bg-secondary">Header</h4>
+                    <h4 className="text-bg-secondary rounded-1 p-1">Header</h4>
                     <div className="row">
                         <div className="col"><b>Author: </b>{document.author}</div>
                         <div className="col"><b>Requestor: </b>{document.requestor}</div>
@@ -20,36 +33,28 @@ function Document ({documents}){
                     <div className="row">
                         <div className="col"><b>Title: </b>{document.doc_title}</div>
                     </div>
-                    <h4 className="text-bg-secondary">Reason:</h4>
+                    <h4 className="text-bg-secondary rounded-1 p-1">Reason:</h4>
                     <pre>{document.reason}</pre>
-                    <h4 className="text-bg-secondary">Summary:</h4>
+                    <h4 className="text-bg-secondary rounded-1 p-1">Summary:</h4>
                     <pre>{document.summary}</pre>
-                    <h4 className="text-bg-secondary">Parts:</h4>
+                    <h4 className="text-bg-secondary rounded-1 p-1">Parts:</h4>
                     <div className="container">
-                        <div className="row">
-                            <div className="card col-3"></div>
-                            <div className="card-header">part</div>
-                        </div>
-                        <div className="card-body">
-                            <ul className="list-group list-group-flush list-unstyled">
-                                <li className="list-group-item"></li>
-                                <li>Type:</li>
-                            </ul>
+                        <div className="row justify-content-center">
+                            {parts.map((o,i)=> <Part key={o.Part.part_id} part={o.Part}></Part>)}
                         </div>
                     </div>
                     <h4 className="text-bg-secondary mt-3">Attachments:</h4>
                     <h4 className="text-bg-secondary">Signatures:</h4>
                 </form>
-                <div className="button-container">
+                <div className="container">
                     <form method="post">
-                        <button className="btn btn-secondary mb-3" name="button" value="return">Return</button>
-                        <button className="btn btn-success mb-3" name="button" value="approve">Approve</button>
-                        <button className="btn btn-danger mb-3" name="button" value="reject" >Reject</button>
-                        <button className="btn btn-secondary mb-3" name="button" value="add_comment">Add Comment</button>
+                        <button className="btn btn-secondary m-1" name="button" value="return">Return</button>
+                        <button className="btn btn-success m-1" name="button" value="approve">Approve</button>
+                        <button className="btn btn-danger m-1" name="button" value="reject" >Reject</button>
+                        <button className="btn btn-secondary m-1" name="button" value="add_comment">Add Comment</button>
                     </form>
                 </div>
             </div>
-        </div>
     )
 }
 
