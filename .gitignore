@@ -25,3 +25,6 @@ dist-ssr
 
 #etc
 src/server/config.ini
+/src/server/__pycache__
+.env.development
+.env.production

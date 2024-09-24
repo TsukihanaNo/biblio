@@ -9,7 +9,8 @@ function App() {
 
   useEffect(()=>{
     console.log('in effect',navlink)
-    fetch('http://localhost:5000/document/'+navlink).
+    console.log(import.meta.env.VITE_API_URL+'/document/'+navlink)
+    fetch(import.meta.env.VITE_API_URL+'/document/'+navlink).
     then(response =>{
       if(response.ok){
         return response.json();

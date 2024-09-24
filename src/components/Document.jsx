@@ -13,7 +13,7 @@ function Document ({documents}){
     const document =documents[0].Document
     useEffect(()=>{
         console.log('in effect, getting part',document.doc_id)
-        fetch('http://localhost:5000/part/'+document.doc_id+'/get').
+        fetch(import.meta.env.VITE_API_URL+'/part/'+document.doc_id+'/get').
         then(response =>{
         if(response.ok){
             return response.json();
@@ -24,7 +24,7 @@ function Document ({documents}){
 
     useEffect(()=>{
         console.log('in effect, getting attachment',document.doc_id)
-        fetch('http://localhost:5000/attachment/'+document.doc_id+'/get').
+        fetch(import.meta.env.VITE_API_URL+'/attachment/'+document.doc_id+'/get').
         then(response =>{
         if(response.ok){
             return response.json();
@@ -35,7 +35,7 @@ function Document ({documents}){
 
     useEffect(()=>{
         console.log('in effect, getting signatures',document.doc_id)
-        fetch('http://localhost:5000/signature/'+document.doc_id+'/get').
+        fetch(import.meta.env.VITE_API_URL+'/signature/'+document.doc_id+'/get').
         then(response =>{
         if(response.ok){
             return response.json();
@@ -46,7 +46,7 @@ function Document ({documents}){
 
     useEffect(()=>{
         console.log('in effect, getting comments',document.doc_id)
-        fetch('http://localhost:5000/comment/'+document.doc_id+'/get').
+        fetch(import.meta.env.VITE_API_URL+'/comment/'+document.doc_id+'/get').
         then(response =>{
         if(response.ok){
             return response.json();
