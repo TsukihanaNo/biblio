@@ -2,7 +2,7 @@ function Navbar({navlink,setNavLink}){
     return (
         <div className="container-fluid bg-dark">
             <div className="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 bg-dark">
-            <div className="col-md-3 mb-2 mb-md-0 text-light"><a>Manager</a></div>
+            <div className="col-md-3 mb-2 mb-md-0 text-light"><h2><em>Biblio</em></h2></div>
             
             <ul className="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
                 <li><a className={"btn nav-link px-2 "+ (navlink=='mydoc' ? "link-secondary" : "")} onClick={()=>setNavLink("mydoc")}>My Documents</a></li>

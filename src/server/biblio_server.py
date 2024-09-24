@@ -8,6 +8,9 @@ from flask import jsonify, json
 from flask import g
 from Document import *
 from Part import *
+from Attachment import *
+from Signature import *
+from Comment import *
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -52,7 +55,7 @@ def close_db(e=None):
 @app.route('/document/mydoc', methods=['GET'])
 def get_mydocs():
     db,cursor = get_db()
-    cursor.execute(f"SELECT * FROM document LIMIT 10")
+    cursor.execute(f"SELECT * FROM document where doc_id like 'ECN%' LIMIT 10 ")
     documents = cursor.fetchall()
     document_list = []
     for document in documents:
@@ -65,7 +68,7 @@ def get_mydocs():
 @app.route('/document/completed', methods=['GET'])
 def get_completed():
     db,cursor = get_db()
-    cursor.execute(f"SELECT * FROM document where status='Completed' order by first_release desc")
+    cursor.execute(f"SELECT * FROM document where status='Completed' and doc_id like 'ECN%' order by first_release desc")
     documents = cursor.fetchall()
     document_list = []
     for document in documents:
@@ -77,7 +80,7 @@ def get_completed():
 @app.route('/document/inprogress', methods=['GET'])
 def get_inprogress():
     db,cursor = get_db()
-    cursor.execute(f"SELECT * FROM document where status='Out For Approval'")
+    cursor.execute(f"SELECT * FROM document where status='Out For Approval' and doc_id like 'ECN%'")
     documents = cursor.fetchall()
     document_list = []
     for document in documents:
@@ -89,7 +92,7 @@ def get_inprogress():
 @app.route('/document/rejected', methods=['GET'])
 def get_rejected():
     db,cursor = get_db()
-    cursor.execute(f"SELECT * FROM document where status='Rejected'")
+    cursor.execute(f"SELECT * FROM document where status='Rejected' and doc_id like 'ECN%'")
     documents = cursor.fetchall()
     document_list = []
     for document in documents:
@@ -101,7 +104,7 @@ def get_rejected():
 @app.route('/document/canceled', methods=['GET'])
 def get_canceled():
     db,cursor = get_db()
-    cursor.execute(f"SELECT * FROM document where status='Canceled'")
+    cursor.execute(f"SELECT * FROM document where status='Canceled' and doc_id like 'ECN%'")
     documents = cursor.fetchall()
     document_list = []
     for document in documents:
@@ -133,6 +136,43 @@ def get_parts(id):
         parts_list.append(p)
     json_str = jsonify([p.toJSON() for p in parts_list])
     return json_str
+
+@app.route('/attachment/<id>/get', methods=['GET'])
+def get_attachments(id):
+    db,cursor = get_db()
+    cursor.execute(f"SELECT * FROM attachments where doc_id='{id}'")
+    attachments = cursor.fetchall()
+    attachment_list = []
+    for attachment in attachments:
+        a = Attachment(attachment['filename'],attachment['filepath'])
+        attachment_list.append(a)
+    json_str = jsonify([a.toJSON() for a in attachment_list])
+    return json_str
+
+@app.route('/signature/<id>/get', methods=['GET'])
+def get_signature(id):
+    db,cursor = get_db()
+    cursor.execute(f"SELECT * FROM signatures where doc_id='{id}' and type='Signing'")
+    signatures = cursor.fetchall()
+    signature_list = []
+    for signature in signatures:
+        s = Signature(signature['name'],signature['job_title'],signature['signed_date'])
+        signature_list.append(s)
+    json_str = jsonify([s.toJSON() for s in signature_list])
+    return json_str
+
+@app.route('/comment/<id>/get', methods=['GET'])
+def get_comments(id):
+    db,cursor = get_db()
+    cursor.execute(f"SELECT * FROM comments where doc_id='{id}'")
+    comments = cursor.fetchall()
+    comment_list = []
+    for comment in comments:
+        c = Comment(comment['user_id'],comment['comm_date'],comment['comment'],comment['type'])
+        comment_list.append(c)
+    json_str = jsonify([c.toJSON() for c in comment_list])
+    return json_str
+
 
 if __name__ == '__main__':
     app.run(debug=True)
