@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import Navbar from './components/navbar'
 import MainContainer from './components/MainContainer'
-import LoginForm from './components/LoginForm'
+// import LoginForm from './components/LoginForm'
 
 function App() {
   const [navlink,setNavLink] = useState("mydoc")
