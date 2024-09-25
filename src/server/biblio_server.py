@@ -6,6 +6,7 @@ import os
 import html2text
 from flask import jsonify, json
 from flask import g
+from datetime import datetime
 from Document import *
 from Part import *
 from Attachment import *
@@ -51,15 +52,51 @@ def close_db(e=None):
     if db is not None:
         db.close()
         
+def getWaitingUser(doc_id,cursor):
+    users = []
+    usr_str = ""
+    cursor.execute(f"select user_id from signatures where doc_id='{doc_id}' and signed_date is Null and type='Signing'")
+    results = cursor.fetchall()
+    for result in results:
+        if result is not None:
+            users.append(result[0])
+    count = 0
+    for user in users:
+        usr_str += user
+        if count<len(users)-1:
+            usr_str+=","
+        count+=1
+    return usr_str
+
+def getElapsedDays(day1):
+    if day1 is None:
+        return 0
+    
+    today  = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    day2 = datetime.strptime(today,'%Y-%m-%d %H:%M:%S')
+    day1 = datetime.strptime(day1,'%Y-%m-%d %H:%M:%S')
+    elapsed = day2 - day1
+    elapsed_days = "{:.2f}".format(elapsed.days + round(elapsed.seconds/86400,2))
+
+    return elapsed_days
+
+@app.route('/login',methods=['GET','POST'])
+def login():
+    return jsonify({'token':'test123'})
+        
 
 @app.route('/document/mydoc', methods=['GET'])
 def get_mydocs():
     db,cursor = get_db()
-    cursor.execute(f"SELECT * FROM document where doc_id like 'ECN%' LIMIT 10 ")
+    cursor.execute(f"SELECT * FROM document where doc_id like 'ECN%' and status !='Completed' LIMIT 10 ")
     documents = cursor.fetchall()
     document_list = []
     for document in documents:
-        doc = Document(document['doc_id'], document['doc_title'], document['author'], document['status'], document['first_release'], document['last_modified'],document['stage'],document['requestor'],document['doc_type'],document['department'],document['doc_reason_code'],document['doc_reason'],document['doc_summary'])
+        waiting_on = getWaitingUser(document['doc_id'],cursor)
+        elapsed = getElapsedDays(document['first_release'])
+        doc = Document(document['doc_id'], document['doc_title'], document['author'], document['status'], document['first_release'], 
+                    document['last_modified'],document['stage'],document['requestor'],document['doc_type'],document['department'],
+                    document['doc_reason_code'],document['doc_reason'],document['doc_summary'],elapsed_days=elapsed,waiting_on=waiting_on)
         document_list.append(doc)
     json_str = jsonify([d.toJSON() for d in document_list])
     return json_str
@@ -72,7 +109,9 @@ def get_completed():
     documents = cursor.fetchall()
     document_list = []
     for document in documents:
-        doc = Document(document['doc_id'], document['doc_title'], document['author'], document['status'], document['first_release'], document['last_modified'],document['stage'],document['requestor'],document['doc_type'],document['department'],document['doc_reason_code'],document['doc_reason'],document['doc_summary'])
+        doc = Document(document['doc_id'], document['doc_title'], document['author'], document['status'], document['first_release'],
+                    document['last_modified'],document['stage'],document['requestor'],document['doc_type'],document['department'],
+                    document['doc_reason_code'],document['doc_reason'],document['doc_summary'],comp_date=document['comp_date'],completed_days=document['comp_days'])
         document_list.append(doc)
     json_str = jsonify([d.toJSON() for d in document_list])
     return json_str
@@ -84,7 +123,11 @@ def get_inprogress():
     documents = cursor.fetchall()
     document_list = []
     for document in documents:
-        doc = Document(document['doc_id'], document['doc_title'], document['author'], document['status'], document['first_release'], document['last_modified'],document['stage'],document['requestor'],document['doc_type'],document['department'],document['doc_reason_code'],document['doc_reason'],document['doc_summary'])
+        waiting_on = getWaitingUser(document['doc_id'],cursor)
+        elapsed = getElapsedDays(document['first_release'])
+        doc = Document(document['doc_id'], document['doc_title'], document['author'], document['status'], document['first_release'], 
+                    document['last_modified'],document['stage'],document['requestor'],document['doc_type'],document['department'],
+                    document['doc_reason_code'],document['doc_reason'],document['doc_summary'],elapsed_days=elapsed,waiting_on=waiting_on)
         document_list.append(doc)
     json_str = jsonify([d.toJSON() for d in document_list])
     return json_str
@@ -96,7 +139,9 @@ def get_rejected():
     documents = cursor.fetchall()
     document_list = []
     for document in documents:
-        doc = Document(document['doc_id'], document['doc_title'], document['author'], document['status'], document['first_release'], document['last_modified'],document['stage'],document['requestor'],document['doc_type'],document['department'],document['doc_reason_code'],document['doc_reason'],document['doc_summary'])
+        doc = Document(document['doc_id'], document['doc_title'], document['author'], document['status'], document['first_release'],
+                    document['last_modified'],document['stage'],document['requestor'],document['doc_type'],document['department'],
+                    document['doc_reason_code'],document['doc_reason'],document['doc_summary'])
         document_list.append(doc)
     json_str = jsonify([d.toJSON() for d in document_list])
     return json_str
@@ -108,7 +153,9 @@ def get_canceled():
     documents = cursor.fetchall()
     document_list = []
     for document in documents:
-        doc = Document(document['doc_id'], document['doc_title'], document['author'], document['status'], document['first_release'], document['last_modified'],document['stage'],document['requestor'],document['doc_type'],document['department'],document['doc_reason_code'],document['doc_reason'],document['doc_summary'])
+        doc = Document(document['doc_id'], document['doc_title'], document['author'], document['status'], document['first_release'],
+                    document['last_modified'],document['stage'],document['requestor'],document['doc_type'],document['department'],
+                    document['doc_reason_code'],document['doc_reason'],document['doc_summary'])
         document_list.append(doc)
     json_str = jsonify([d.toJSON() for d in document_list])
     return json_str
@@ -120,7 +167,8 @@ def get_document(id):
     documents = cursor.fetchall()
     document_list = []
     for document in documents:
-        doc = Document(document['doc_id'], document['doc_title'], document['author'], document['status'], document['first_release'], document['last_modified'],document['stage'],document['requestor'],document['doc_type'],document['department'],document['doc_reason_code'],html2text.html2text(document['doc_reason']),html2text.html2text(document['doc_summary']),document['comp_date'],document['comp_days'],)
+        waiting_on = getWaitingUser(document['doc_id'],cursor)
+        doc = Document(document['doc_id'], document['doc_title'], document['author'], document['status'], document['first_release'], document['last_modified'],document['stage'],document['requestor'],document['doc_type'],document['department'],document['doc_reason_code'],document['doc_reason'],document['doc_summary'],waiting_on=waiting_on)
         document_list.append(doc)
     json_str = jsonify([d.toJSON() for d in document_list])
     return json_str

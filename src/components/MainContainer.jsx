@@ -11,7 +11,7 @@ function MainContainer({documents,setNavLink}){
         return (
             <section className="container">
                 <h1 className="border-bottom">Showing {documents.length} Documents</h1>
-                {documents.map((o,i)=><DocumentCard key={o.Document.doc_id} ecnID={o.Document.doc_id} title={o.Document.doc_title} author={o.Document.author} stage={o.Document.stage} status={o.Document.status} released_on={o.Document.released_on} last_modified={o.Document.last_modified} completed_days = {o.Document.completed_days} setNavLink={setNavLink}></DocumentCard>)}
+                {documents.map((o,i)=><DocumentCard key={o.Document.doc_id} document={o.Document} setNavLink={setNavLink}></DocumentCard>)}
             </section>
         )
     }
