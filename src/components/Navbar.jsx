@@ -1,4 +1,4 @@
-function Navbar({navlink,setNavLink}){
+function Navbar({navlink,setNavLink,user,setLoggedIn}){
     return (
         <div className="container-fluid bg-dark">
             <div className="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 bg-dark">
@@ -12,7 +12,7 @@ function Navbar({navlink,setNavLink}){
                 <li><a className={"btn nav-link px-2 "+ (navlink=='canceled' ? "link-secondary" : "")} onClick={()=>setNavLink("canceled")}>Canceled</a></li>  
                 </ul>
                 <ul className="nav col-md-3 justify-content-end">
-                    <li><a className="btn nav-link">Log Out</a></li>
+                    <li><a className="btn nav-link" onClick={()=>setLoggedIn(false)}>{user} - Log Out</a></li>
                 </ul>
             </div>
         </div>

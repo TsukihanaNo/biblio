@@ -3,10 +3,11 @@ from flask_cors import CORS, cross_origin
 import psycopg2
 import psycopg2.extras
 import os
+import jwt
 import html2text
-from flask import jsonify, json
-from flask import g
-from datetime import datetime
+from flask import Flask, request, jsonify, make_response, render_template, session, flash,g
+from functools import wraps
+from datetime import datetime, timedelta
 from Document import *
 from Part import *
 from Attachment import *
@@ -14,6 +15,7 @@ from Signature import *
 from Comment import *
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'KEEP_IT_A_SECRET'
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
@@ -220,6 +222,35 @@ def get_comments(id):
         comment_list.append(c)
     json_str = jsonify([c.toJSON() for c in comment_list])
     return json_str
+
+@app.route('/auth', methods=['GET','POST'])
+def auth():
+    # if request.form['username'] and request.form['password'] == '123456':
+        # session['logged_in'] = True
+    token = jwt.encode({
+        'user': 'lily',
+        'expiration': str(datetime.now() + timedelta(minutes=50))
+    }, app.config['SECRET_KEY'])
+
+    return jsonify({'message':'success','token': token})
+    # else:
+    #     return make_response('Unable to verify', 403, {'WWW-Authenticate': 'Basic realm: "Authentication Failed"'})
+    
+def token_required(func):
+    @wraps(func)
+    def decorated(*args, **kwargs):
+        token = request.args.get('token')
+        if not token:
+            return jsonify({'message': 'Token is missing!'}), 401
+
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'])
+        except:
+            return jsonify({'message': 'Invalid token'}), 403
+
+        return func(*args, **kwargs)
+
+    return decorated
 
 
 if __name__ == '__main__':
