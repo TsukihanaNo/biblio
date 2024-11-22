@@ -82,43 +82,48 @@ def getElapsedDays(day1):
 
     return elapsed_days
 
+def createDocument(document,elapsed="",waiting_on=""):
+    return Document(document['doc_id'], document['doc_title'], document['author'], document['status'], document['first_release'], 
+                    document['last_modified'],document['stage'],document['requestor'],document['doc_type'],document['department'],
+                    document['doc_reason_code'],html2text.html2text(document['doc_reason']),html2text.html2text(document['doc_summary']),elapsed_days=elapsed,waiting_on=waiting_on)
+
 @app.route('/login',methods=['GET','POST'])
 def login():
-    return jsonify({'token':'test123'})
+    data = request.get_json()
+    print(data)
+    pass
+    # return jsonify({'token':'test123'})
         
 
-@app.route('/document/mydoc', methods=['GET'])
+@app.route('/document/mydoc', methods=['GET','POST'])
 def get_mydocs():
+    user = request.get_json()
     db,cursor = get_db()
-    cursor.execute(f"SELECT * FROM document where doc_id like 'ECN%' and status !='Completed' LIMIT 10 ")
+    cursor.execute(f"SELECT * FROM document where doc_id like 'ECN%' and status !='Completed' and author='{user}'")
     documents = cursor.fetchall()
     document_list = []
     for document in documents:
         waiting_on = getWaitingUser(document['doc_id'],cursor)
         elapsed = getElapsedDays(document['first_release'])
-        doc = Document(document['doc_id'], document['doc_title'], document['author'], document['status'], document['first_release'], 
-                    document['last_modified'],document['stage'],document['requestor'],document['doc_type'],document['department'],
-                    document['doc_reason_code'],document['doc_reason'],document['doc_summary'],elapsed_days=elapsed,waiting_on=waiting_on)
+        doc = createDocument(document,elapsed,waiting_on)
         document_list.append(doc)
     json_str = jsonify([d.toJSON() for d in document_list])
     return json_str
     # return jsonify({'documents': documents})
     
-@app.route('/document/completed', methods=['GET'])
+@app.route('/document/completed', methods=['GET','POST'])
 def get_completed():
     db,cursor = get_db()
     cursor.execute(f"SELECT * FROM document where status='Completed' and doc_id like 'ECN%' order by first_release desc")
     documents = cursor.fetchall()
     document_list = []
     for document in documents:
-        doc = Document(document['doc_id'], document['doc_title'], document['author'], document['status'], document['first_release'],
-                    document['last_modified'],document['stage'],document['requestor'],document['doc_type'],document['department'],
-                    document['doc_reason_code'],document['doc_reason'],document['doc_summary'],comp_date=document['comp_date'],completed_days=document['comp_days'])
+        doc = createDocument(document)
         document_list.append(doc)
     json_str = jsonify([d.toJSON() for d in document_list])
     return json_str
 
-@app.route('/document/inprogress', methods=['GET'])
+@app.route('/document/inprogress', methods=['GET','POST'])
 def get_inprogress():
     db,cursor = get_db()
     cursor.execute(f"SELECT * FROM document where status='Out For Approval' and doc_id like 'ECN%'")
@@ -127,42 +132,36 @@ def get_inprogress():
     for document in documents:
         waiting_on = getWaitingUser(document['doc_id'],cursor)
         elapsed = getElapsedDays(document['first_release'])
-        doc = Document(document['doc_id'], document['doc_title'], document['author'], document['status'], document['first_release'], 
-                    document['last_modified'],document['stage'],document['requestor'],document['doc_type'],document['department'],
-                    document['doc_reason_code'],document['doc_reason'],document['doc_summary'],elapsed_days=elapsed,waiting_on=waiting_on)
+        doc = createDocument(document,elapsed,waiting_on)
         document_list.append(doc)
     json_str = jsonify([d.toJSON() for d in document_list])
     return json_str
 
-@app.route('/document/rejected', methods=['GET'])
+@app.route('/document/rejected', methods=['GET','POST'])
 def get_rejected():
     db,cursor = get_db()
     cursor.execute(f"SELECT * FROM document where status='Rejected' and doc_id like 'ECN%'")
     documents = cursor.fetchall()
     document_list = []
     for document in documents:
-        doc = Document(document['doc_id'], document['doc_title'], document['author'], document['status'], document['first_release'],
-                    document['last_modified'],document['stage'],document['requestor'],document['doc_type'],document['department'],
-                    document['doc_reason_code'],document['doc_reason'],document['doc_summary'])
+        doc = createDocument(document)
         document_list.append(doc)
     json_str = jsonify([d.toJSON() for d in document_list])
     return json_str
 
-@app.route('/document/canceled', methods=['GET'])
+@app.route('/document/canceled', methods=['GET','POST'])
 def get_canceled():
     db,cursor = get_db()
     cursor.execute(f"SELECT * FROM document where status='Canceled' and doc_id like 'ECN%'")
     documents = cursor.fetchall()
     document_list = []
     for document in documents:
-        doc = Document(document['doc_id'], document['doc_title'], document['author'], document['status'], document['first_release'],
-                    document['last_modified'],document['stage'],document['requestor'],document['doc_type'],document['department'],
-                    document['doc_reason_code'],document['doc_reason'],document['doc_summary'])
+        doc = createDocument(document)
         document_list.append(doc)
     json_str = jsonify([d.toJSON() for d in document_list])
     return json_str
 
-@app.route('/document/view/<id>', methods=['GET'])
+@app.route('/document/view/<id>', methods=['GET','POST'])
 def get_document(id):
     db,cursor = get_db()
     cursor.execute(f"SELECT * FROM document where doc_id='{id}'")
@@ -170,7 +169,7 @@ def get_document(id):
     document_list = []
     for document in documents:
         waiting_on = getWaitingUser(document['doc_id'],cursor)
-        doc = Document(document['doc_id'], document['doc_title'], document['author'], document['status'], document['first_release'], document['last_modified'],document['stage'],document['requestor'],document['doc_type'],document['department'],document['doc_reason_code'],document['doc_reason'],document['doc_summary'],waiting_on=waiting_on)
+        doc = createDocument(document,waiting_on=waiting_on)
         document_list.append(doc)
     json_str = jsonify([d.toJSON() for d in document_list])
     return json_str

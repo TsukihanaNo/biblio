@@ -16,7 +16,13 @@ const Home = (props) => {
     useEffect(()=>{
         console.log('in effect',navlink)
         console.log(import.meta.env.VITE_API_URL+'/document/'+navlink)
-        fetch(import.meta.env.VITE_API_URL+'/document/'+navlink).
+        fetch(import.meta.env.VITE_API_URL+'/document/'+navlink,{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(user)
+            }).
         then(response =>{
         if(response.ok){
             return response.json();
