@@ -103,7 +103,7 @@ def login():
 def get_mydocs():
     user = request.get_json()
     db,cursor = get_db()
-    cursor.execute(f"SELECT * FROM document where status !='Completed' and author='{user}'")
+    cursor.execute(f"SELECT * FROM document where status !='Completed' and author='{user}' and doc_id not like 'PRJ%'")
     documents = cursor.fetchall()
     document_list = []
     for document in documents:
@@ -118,7 +118,7 @@ def get_mydocs():
 @app.route('/document/completed', methods=['GET','POST'])
 def get_completed():
     db,cursor = get_db()
-    cursor.execute(f"SELECT * FROM document where status='Completed' order by first_release desc")
+    cursor.execute(f"SELECT * FROM document where status='Completed' and doc_id not like 'PRJ%' order by first_release desc")
     documents = cursor.fetchall()
     document_list = []
     for document in documents:
@@ -130,7 +130,7 @@ def get_completed():
 @app.route('/document/inprogress', methods=['GET','POST'])
 def get_inprogress():
     db,cursor = get_db()
-    cursor.execute(f"SELECT * FROM document where status='Out For Approval' and doc_id like 'ECN%'")
+    cursor.execute(f"SELECT * FROM document where status='Out For Approval' and doc_id not like 'PRJ%'")
     documents = cursor.fetchall()
     document_list = []
     for document in documents:
@@ -144,7 +144,7 @@ def get_inprogress():
 @app.route('/document/rejected', methods=['GET','POST'])
 def get_rejected():
     db,cursor = get_db()
-    cursor.execute(f"SELECT * FROM document where status='Rejected' and doc_id like 'ECN%'")
+    cursor.execute(f"SELECT * FROM document where status='Rejected' and doc_id not like 'PRJ%'")
     documents = cursor.fetchall()
     document_list = []
     for document in documents:
@@ -156,7 +156,7 @@ def get_rejected():
 @app.route('/document/canceled', methods=['GET','POST'])
 def get_canceled():
     db,cursor = get_db()
-    cursor.execute(f"SELECT * FROM document where status='Canceled' and doc_id like 'ECN%'")
+    cursor.execute(f"SELECT * FROM document where status='Canceled' and doc_id not like 'PRJ%'")
     documents = cursor.fetchall()
     document_list = []
     for document in documents:
