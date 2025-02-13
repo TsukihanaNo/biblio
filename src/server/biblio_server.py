@@ -83,6 +83,10 @@ def getElapsedDays(day1):
     return elapsed_days
 
 def createDocument(document,elapsed="",waiting_on=""):
+    if document['doc_reason'] is None:
+        document['doc_reason']=""
+    if document['doc_summary'] is None:
+        document['doc_summary']=""
     return Document(document['doc_id'], document['doc_title'], document['author'], document['status'], document['first_release'], 
                     document['last_modified'],document['stage'],document['requestor'],document['doc_type'],document['department'],
                     document['doc_reason_code'],html2text.html2text(document['doc_reason']),html2text.html2text(document['doc_summary']),elapsed_days=elapsed,waiting_on=waiting_on)
@@ -99,7 +103,7 @@ def login():
 def get_mydocs():
     user = request.get_json()
     db,cursor = get_db()
-    cursor.execute(f"SELECT * FROM document where doc_id like 'ECN%' and status !='Completed' and author='{user}'")
+    cursor.execute(f"SELECT * FROM document where status !='Completed' and author='{user}'")
     documents = cursor.fetchall()
     document_list = []
     for document in documents:
@@ -114,7 +118,7 @@ def get_mydocs():
 @app.route('/document/completed', methods=['GET','POST'])
 def get_completed():
     db,cursor = get_db()
-    cursor.execute(f"SELECT * FROM document where status='Completed' and doc_id like 'ECN%' order by first_release desc")
+    cursor.execute(f"SELECT * FROM document where status='Completed' order by first_release desc")
     documents = cursor.fetchall()
     document_list = []
     for document in documents:
