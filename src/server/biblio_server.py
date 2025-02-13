@@ -82,14 +82,14 @@ def getElapsedDays(day1):
 
     return elapsed_days
 
-def createDocument(document,elapsed="",waiting_on=""):
+def createDocument(document,elapsed="",waiting_on="",signing=""):
     if document['doc_reason'] is None:
         document['doc_reason']=""
     if document['doc_summary'] is None:
         document['doc_summary']=""
     return Document(document['doc_id'], document['doc_title'], document['author'], document['status'], document['first_release'], 
                     document['last_modified'],document['stage'],document['requestor'],document['doc_type'],document['department'],
-                    document['doc_reason_code'],html2text.html2text(document['doc_reason']),html2text.html2text(document['doc_summary']),elapsed_days=elapsed,waiting_on=waiting_on)
+                    document['doc_reason_code'],html2text.html2text(document['doc_reason']),html2text.html2text(document['doc_summary']),document['comp_date'],document['comp_days'],elapsed_days=elapsed,waiting_on=waiting_on,signing=signing)
 
 @app.route('/login',methods=['GET','POST'])
 def login():
@@ -114,6 +114,22 @@ def get_mydocs():
     json_str = jsonify([d.toJSON() for d in document_list])
     return json_str
     # return jsonify({'documents': documents})
+    
+@app.route('/document/queue', methods=['GET','POST'])
+def get_queue():
+    user = request.get_json()
+    db,cursor = get_db()
+    command =f"Select * from signatures INNER JOIN document ON signatures.doc_id=document.doc_id WHERE (document.status='Out For Approval' or document.status='Approved') and signatures.user_id='{user}'and signatures.signed_date is NULL and signatures.type='Signing'"
+    cursor.execute(command)
+    documents = cursor.fetchall()
+    document_list = []
+    for document in documents:
+        waiting_on = getWaitingUser(document['doc_id'],cursor)
+        elapsed = getElapsedDays(document['first_release'])
+        doc = createDocument(document,elapsed,waiting_on)
+        document_list.append(doc)
+    json_str = jsonify([d.toJSON() for d in document_list])
+    return json_str
     
 @app.route('/document/completed', methods=['GET','POST'])
 def get_completed():
@@ -165,15 +181,44 @@ def get_canceled():
     json_str = jsonify([d.toJSON() for d in document_list])
     return json_str
 
+@app.route('/document/draft', methods=['GET','POST'])
+def get_draft():
+    db,cursor = get_db()
+    cursor.execute(f"SELECT * FROM document where status='Draft' and doc_id not like 'PRJ%'")
+    documents = cursor.fetchall()
+    document_list = []
+    for document in documents:
+        doc = createDocument(document)
+        document_list.append(doc)
+    json_str = jsonify([d.toJSON() for d in document_list])
+    return json_str
+
+@app.route('/document/approved', methods=['GET','POST'])
+def get_approved():
+    db,cursor = get_db()
+    cursor.execute(f"SELECT * FROM document where status='Approved' and doc_id not like 'PRJ%'")
+    documents = cursor.fetchall()
+    document_list = []
+    for document in documents:
+        doc = createDocument(document)
+        document_list.append(doc)
+    json_str = jsonify([d.toJSON() for d in document_list])
+    return json_str
+
 @app.route('/document/view/<id>', methods=['GET','POST'])
 def get_document(id):
+    user = request.get_json()
     db,cursor = get_db()
     cursor.execute(f"SELECT * FROM document where doc_id='{id}'")
     documents = cursor.fetchall()
     document_list = []
     for document in documents:
         waiting_on = getWaitingUser(document['doc_id'],cursor)
-        doc = createDocument(document,waiting_on=waiting_on)
+        if user in waiting_on:
+            signing = "y"
+        else:
+            signing = 'n'
+        doc = createDocument(document,waiting_on=waiting_on,signing=signing)
         document_list.append(doc)
     json_str = jsonify([d.toJSON() for d in document_list])
     return json_str

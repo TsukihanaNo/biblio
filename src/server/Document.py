@@ -1,5 +1,5 @@
 class Document:
-    def __init__(self,doc_id, doc_title, author, status, released_on, last_modified,stage, requestor, doc_type,department,reason_code,reason,summary,comp_date="",completed_days=0,elapsed_days=0,waiting_on=""):
+    def __init__(self,doc_id, doc_title, author, status, released_on, last_modified,stage, requestor, doc_type,department,reason_code,reason,summary,comp_date,completed_days,elapsed_days=0,waiting_on="",signing=""):
         self.doc_id =doc_id
         self.doc_title = doc_title
         self.author = author
@@ -17,6 +17,7 @@ class Document:
         self.commpleted_days = completed_days
         self.elapsed_days = elapsed_days
         self.waiting_on = waiting_on
+        self.signing = signing
         
     def toJSON(self):
         return {"Document":{'doc_id':self.doc_id, 
@@ -35,4 +36,5 @@ class Document:
                             'comp_date':self.comp_date,
                             'completed_days':self.commpleted_days,
                             'elapsed_days':self.elapsed_days,
-                            'waiting_on':self.waiting_on}}
+                            'waiting_on':self.waiting_on,
+                            'signing' : self.signing}}

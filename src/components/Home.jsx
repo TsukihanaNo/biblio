@@ -37,7 +37,7 @@ const Home = (props) => {
     return (
         <>
         <Navbar navlink={navlink} setNavLink={setNavLink} user={user} setLoggedIn={setLoggedIn}></Navbar>
-        <MainContainer documents={documents} setNavLink={setNavLink}></MainContainer>
+        <MainContainer documents={documents} setNavLink={setNavLink} user={user}></MainContainer>
         </>
     )
 }

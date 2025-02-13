@@ -3,8 +3,9 @@ import Part from "./Part"
 import Attachment from "./Attachment"
 import Signature from "./Signature";
 import Comment from "./Comment";
+import Toolbar from "./Toolbar"
 
-function Document ({documents}){
+function Document ({documents,user}){
     const [parts,setParts] = useState([])
     const [attachments, setAttachments] = useState([])
     const [signatures,setSignatures] = useState([])
@@ -103,14 +104,7 @@ function Document ({documents}){
                     </table>
                 </form>
             </div>
-            <div className="container mb-3">
-                    <form method="post">
-                        {/* <button className="btn btn-secondary m-1" name="button" value="return">Return</button> */}
-                        <button className="btn btn-success m-1" name="button" value="approve">Approve</button>
-                        <button className="btn btn-danger m-1" name="button" value="reject" >Reject</button>
-                        <button className="btn btn-secondary m-1" name="button" value="add_comment">Add Comment</button>
-                    </form>
-                </div>
+            <Toolbar signing={document.signing}></Toolbar>
             <div className="container">
                 <h4 className="text-bg-secondary">Comments:</h4>
                 {comments.map((o,i)=> <Comment key={i} comment={o.Comment} author={document.author}></Comment>)}

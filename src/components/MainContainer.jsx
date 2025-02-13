@@ -1,10 +1,10 @@
 import DocumentCard from "./DocumentCard"
 import Document from "./Document"
 
-function MainContainer({documents,setNavLink}){
+function MainContainer({documents,setNavLink,user}){
     if(documents.length==1){
         return <section className="container">
-            <Document documents={documents}></Document>
+            <Document documents={documents} user={user}></Document>
         </section>
     }
     else{
