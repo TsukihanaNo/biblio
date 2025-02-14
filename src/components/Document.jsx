@@ -59,7 +59,7 @@ function Document ({documents,user}){
     return (
         <>
             <div className="card mb-3">
-                <h1 className="card-header text-bg-primary">{document.doc_id}</h1>
+                <h1 className="card-header text-bg-primary">{document.doc_id} - {user} - {document.signing}</h1>
                 <form className="card-body">
                     <h4 className="text-bg-secondary rounded-1 p-1">Header</h4>
                     <div className="row">
@@ -86,7 +86,7 @@ function Document ({documents,user}){
                         </div>
                     </div>
                     <h4 className="text-bg-secondary mt-3">Attachments:</h4>
-                    <table class="table">
+                    <table className="table">
                         <tr>
                             <th>File Name</th>
                             <th>File Path</th>
@@ -94,7 +94,7 @@ function Document ({documents,user}){
                         {attachments.map((o,i)=> <Attachment key={o.Attachment.filename} attachment={o.Attachment}></Attachment>)}
                     </table>
                     <h4 className="text-bg-secondary">Signatures:</h4>
-                    <table class="table">
+                    <table className="table">
                         <tr>
                             <th>Job Title</th>
                             <th>Name</th>

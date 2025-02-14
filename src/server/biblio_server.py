@@ -208,12 +208,15 @@ def get_approved():
 @app.route('/document/view/<id>', methods=['GET','POST'])
 def get_document(id):
     user = request.get_json()
+    print(request.get_json())
     db,cursor = get_db()
     cursor.execute(f"SELECT * FROM document where doc_id='{id}'")
     documents = cursor.fetchall()
     document_list = []
     for document in documents:
         waiting_on = getWaitingUser(document['doc_id'],cursor)
+        print(user,waiting_on)
+        print(user in waiting_on)
         if user in waiting_on:
             signing = "y"
         else:

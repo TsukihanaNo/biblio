@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Home from './components/Home'
 import Login from './components/Login'
 import './App.css'
+import DocumentView from './components/DocumentView'
 // import Navbar from './components/navbar'
 // import MainContainer from './components/MainContainer'
 // import LoginForm from './components/LoginForm'
@@ -11,6 +12,8 @@ function App() {
 
   const [loggedIn, setLoggedIn] = useState(false)
   const [user, setUsername] = useState('')
+
+  console.log('start of app')
 
   useEffect(() => {
     // Fetch the user email and token from local storage
@@ -22,6 +25,7 @@ function App() {
       setLoggedIn(false)
       return
     }else{
+      console.log('user found')
       setLoggedIn(true)
       setUsername(user.username)
     }
@@ -48,7 +52,11 @@ function App() {
             path="/"
             element={<Home user={user} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />}
           />
-          <Route path="/login" element={<Login setLoggedIn={setLoggedIn} setUsername={setUsername} />} />
+          <Route path="/login" element={<Login setLoggedIn={setLoggedIn} setUsername={setUsername} />} 
+          />
+          <Route path="/document/view/:id"
+          element={<DocumentView user={user} loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>}
+          />
         </Routes>
       </BrowserRouter>
     </div>

@@ -2,6 +2,7 @@ import DocumentCard from "./DocumentCard"
 import Document from "./Document"
 
 function MainContainer({documents,setNavLink,user}){
+    console.log('main container',user)
     if(documents.length==1){
         return <section className="container">
             <Document documents={documents} user={user}></Document>
