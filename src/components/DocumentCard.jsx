@@ -1,8 +1,9 @@
 function DocumentCard({document,setNavLink}){
+    const link = '/document/view/'+document.doc_id
     return (
         <article className="card mb-3">
             <header>
-                <div className="card-header text-bg-primary"><a className="btn text-bg-primary" onClick={()=>setNavLink("view/"+document.doc_id)}>{document.doc_id} : {document.doc_title}</a></div>
+                <div className="card-header text-bg-primary"><a className="btn text-bg-primary" href={link}>{document.doc_id} : {document.doc_title}</a></div>
                 <div className="card-body">
                     <div className="container">
                         <div className="row">

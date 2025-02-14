@@ -6,7 +6,7 @@ function Navbar({navlink,setNavLink,user,setLoggedIn}){
         localStorage.removeItem('user')
         console.log("setting flag")
         setLoggedIn(false)
-        Navigate('/login')
+        // Navigate('/login')
     }
 
     return (

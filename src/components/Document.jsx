@@ -10,6 +10,7 @@ function Document ({documents,user}){
     const [attachments, setAttachments] = useState([])
     const [signatures,setSignatures] = useState([])
     const [comments,setComments] = useState([])
+    const [approved,setApproved] = useState(false)
     // console.log('documents',documents[0].Document)
     const document =documents[0].Document
     useEffect(()=>{
@@ -21,7 +22,7 @@ function Document ({documents,user}){
         }
         })
         .then(data => setParts(data));
-    },[document.doc_id]);
+    },[]);
 
     useEffect(()=>{
         console.log('in effect, getting attachment',document.doc_id)
@@ -32,7 +33,7 @@ function Document ({documents,user}){
         }
         })
         .then(data => setAttachments(data));
-    },[document.doc_id]);
+    },[]);
 
     useEffect(()=>{
         console.log('in effect, getting signatures',document.doc_id)
@@ -43,7 +44,7 @@ function Document ({documents,user}){
         }
         })
         .then(data => setSignatures(data));
-    },[document.doc_id]);
+    },[]);
 
     useEffect(()=>{
         console.log('in effect, getting comments',document.doc_id)
@@ -54,7 +55,7 @@ function Document ({documents,user}){
         }
         })
         .then(data => setComments(data));
-    },[document.doc_id]);
+    },[]);
 
     return (
         <>
@@ -104,7 +105,7 @@ function Document ({documents,user}){
                     </table>
                 </form>
             </div>
-            <Toolbar signing={document.signing}></Toolbar>
+            <Toolbar signing={document.signing} user={user} doc_id={document.doc_id} setApproved={setApproved}></Toolbar>
             <div className="container">
                 <h4 className="text-bg-secondary">Comments:</h4>
                 {comments.map((o,i)=> <Comment key={i} comment={o.Comment} author={document.author}></Comment>)}

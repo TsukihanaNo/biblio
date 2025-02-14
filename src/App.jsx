@@ -18,8 +18,6 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(!!user)
   
 
-  console.log('start of app')
-
   return (
     <div className="App">
       <BrowserRouter>
@@ -28,7 +26,7 @@ function App() {
             path="/"
             element={<Home user={user} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />}
           />
-          <Route path="/login" element={<Login setLoggedIn={setLoggedIn} setUsername={setUsername} />} 
+          <Route path="/login" element={<Login loggedIn={loggedIn} setLoggedIn={setLoggedIn} setUsername={setUsername} />} 
           />
           <Route path="/document/view/:id"
           element={<DocumentView user={user} loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>}

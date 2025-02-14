@@ -9,6 +9,10 @@ const Login = (props) => {
 
     const navigate = useNavigate()
 
+    if (props.loggedIn){
+        navigate('/')
+    }
+
     const checkAccountExists = (callback) => {
         // fetch('http://localhost:5000/check-account', {
         //     method: 'POST',
@@ -25,7 +29,7 @@ const Login = (props) => {
     }
       // Log in a user using email and password
     const logIn = () => {
-        fetch('http://localhost:5000/auth', {
+        fetch(import.meta.env.VITE_API_URL+'/auth', {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',

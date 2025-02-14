@@ -274,6 +274,25 @@ def get_comments(id):
     json_str = jsonify([c.toJSON() for c in comment_list])
     return json_str
 
+@app.route('/document/approve/<id>',methods=['GET','POST'])
+def approve(id):
+    try:
+        user = request.get_json()
+        db,cursor = get_db()
+        approvedate = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        data = (approvedate,id,user)
+        print(data)
+        cursor.execute("UPDATE signatures SET signed_date = %s WHERE doc_id = %s and user_id = %s",(data))
+        cursor.execute(f"UPDATE document SET last_modified = '{approvedate}' where doc_id='{id}'")
+        # checkComplete()
+        # db.commit()
+        # self.moveECNStage()
+        return '200'
+    except Exception as e:
+        print(e)
+        return '500'
+
+
 @app.route('/auth', methods=['GET','POST'])
 def auth():
     # if request.form['username'] and request.form['password'] == '123456':
