@@ -10,39 +10,15 @@ import DocumentView from './components/DocumentView'
 
 function App() {
 
-  const [loggedIn, setLoggedIn] = useState(false)
-  const [user, setUsername] = useState('')
+  // const [user, setUsername] = useState('')
+  const getUserName = () => {
+    return JSON.parse(localStorage.getItem('user'))?.username
+  }
+  const [user, setUsername] = useState( getUserName()|| "")
+  const [loggedIn, setLoggedIn] = useState(!!user)
+  
 
   console.log('start of app')
-
-  useEffect(() => {
-    // Fetch the user email and token from local storage
-    console.log("in effect checking for user")
-    const user = JSON.parse(localStorage.getItem('user'))
-    console.log(user)
-    // If the token/email does not exist, mark the user as logged out
-    if (!user || !user.token) {
-      setLoggedIn(false)
-      return
-    }else{
-      console.log('user found')
-      setLoggedIn(true)
-      setUsername(user.username)
-    }
-  
-    // If the token exists, verify it with the auth server to see if it is valid
-    // fetch('http://localhost:5000/verify', {
-    //   method: 'POST',
-    //   headers: {
-    //     'jwt-token': user.token,
-    //   },
-    // })
-    //   .then((r) => r.json())
-    //   .then((r) => {
-    //     setLoggedIn('success' === r.message)
-    //     setEmail(user.email || '')
-    //   })
-  }, [])
 
   return (
     <div className="App">

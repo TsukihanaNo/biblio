@@ -15,6 +15,8 @@ const DocumentView = (props) => {
         navigate('/login')
     }
 
+    console.log(user)
+
     useEffect(()=>{
         console.log('doc view user,',user)
         console.log('doc view in effect',navlink)
