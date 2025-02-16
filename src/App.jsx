@@ -17,6 +17,8 @@ function App() {
   const [user, setUsername] = useState( getUserName()|| "")
   const [loggedIn, setLoggedIn] = useState(!!user)
   
+  console.log(user)
+  console.log(import.meta.env.VITE_API_URL)
 
   return (
     <div className="App">
@@ -35,30 +37,6 @@ function App() {
       </BrowserRouter>
     </div>
   )
-  // const [navlink,setNavLink] = useState("mydoc")
-  // const [documents,setDocuments] = useState([])
-  // // const [token,setToken] = useState()
-
-  // useEffect(()=>{
-  //   console.log('in effect',navlink)
-  //   console.log(import.meta.env.VITE_API_URL+'/document/'+navlink)
-  //   fetch(import.meta.env.VITE_API_URL+'/document/'+navlink).
-  //   then(response =>{
-  //     if(response.ok){
-  //       return response.json();
-  //     }
-  //   })
-  //   .then(data => setDocuments(data));
-  // },[navlink]);
-
-  // // console.log('posts',documents);
-  // // documents.map((o,i)=>console.log(o.Document.doc_id));
-
-  // return (
-  //   <>
-  //   <Navbar navlink={navlink} setNavLink={setNavLink}></Navbar>
-  //   <MainContainer documents={documents} setNavLink={setNavLink}></MainContainer>
-  //   </>
 }
 
 export default App
