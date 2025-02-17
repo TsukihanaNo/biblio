@@ -91,6 +91,11 @@ def createDocument(document,elapsed="",waiting_on="",signing=""):
                     document['last_modified'],document['stage'],document['requestor'],document['doc_type'],document['department'],
                     document['doc_reason_code'],html2text.html2text(document['doc_reason']),html2text.html2text(document['doc_summary']),document['comp_date'],document['comp_days'],elapsed_days=elapsed,waiting_on=waiting_on,signing=signing)
 
+
+@app.route('/check',methods=['GET','POST'])
+def check():
+    return "<h1>The server is online</h1>"
+
 @app.route('/login',methods=['GET','POST'])
 def login():
     data = request.get_json()

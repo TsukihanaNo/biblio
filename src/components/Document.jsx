@@ -88,20 +88,28 @@ function Document ({documents,user}){
                     </div>
                     <h4 className="text-bg-secondary mt-3">Attachments:</h4>
                     <table className="table">
+                        <thead>
                         <tr>
                             <th>File Name</th>
                             <th>File Path</th>
                         </tr>
+                        </thead>
+                        <tbody>
                         {attachments.map((o,i)=> <Attachment key={o.Attachment.filename} attachment={o.Attachment}></Attachment>)}
+                        </tbody>
                     </table>
                     <h4 className="text-bg-secondary">Signatures:</h4>
                     <table className="table">
+                        <thead>
                         <tr>
                             <th>Job Title</th>
                             <th>Name</th>
                             <th>Signed Date</th>
                         </tr>
+                        </thead>
+                        <tbody>
                         {signatures.map((o,i)=> <Signature key={o.Signature.name} signature={o.Signature}></Signature>)}
+                        </tbody>
                     </table>
                 </form>
             </div>

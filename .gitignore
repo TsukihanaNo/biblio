@@ -28,3 +28,5 @@ src/server/config.ini
 /src/server/__pycache__
 package-lock.json
 package.json
+.env.development
+.env.production
