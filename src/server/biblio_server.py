@@ -82,6 +82,63 @@ def getElapsedDays(day1):
 
     return elapsed_days
 
+def addNotification(cursor,doc_id,notificationType,from_user=None,userslist=None,msg=""):
+    print(f"adding notificaton: {notificationType}")
+    if userslist is not None:
+        if type(userslist)==type([]):
+            users = ""
+            count = 0
+            for user in userslist:
+                users +=","
+                if count<len(userslist)-1:
+                    users +=","
+                count+=1
+        else:
+            users = userslist
+    else:
+        users = ""
+    if from_user is None:
+        from_user = ""
+            
+    # if self.existNotification(doc_id) and notificationType!="User Comment":
+    #     data = (notificationType,from_user,users,msg, doc_id)
+    #     self.cursor.execute("UPDATE notifications SET type = %s, from_user = %s, users = %s, msg = %s WHERE doc_id = %s",(data))
+    # else:
+    data = (doc_id,"Not Sent",notificationType,from_user, users, msg)
+    cursor.execute("INSERT INTO notifications(doc_id, status, type,from_user, users, msg) VALUES(%s,%s,%s,%s,%s,%s)",(data))
+
+def isUserSignable(cursor,doc_id,user,job_title):
+    curStage = getECNStage()
+    #print(curStage)
+    if curStage == 0:
+        return False
+    titles = getTitlesForStage()
+    titles = titles[str(curStage)]
+    cursor.execute(f"SELECT user_id from signatures where doc_id='{doc_id}' and user_id='{user}'")
+    result = cursor.fetchone()
+    if job_title in titles and result is not None:
+        return True
+    return False
+
+def getNextStage(cursor,doc_id):
+        cursor.execute(f"Select job_title from signatures where doc_id='{doc_id}' and signed_date is NULL and type='Signing'")
+        results = cursor.fetchall()
+        stage = []
+        for result in results:
+            #print(result[0])
+            stage.append(self.stageDict[result[0]])
+        stage = sorted(stage)
+        #print(stage)
+        return stage
+
+def setECNStage(cursor,id,stage):
+    try:
+        #print('setting ecn to ', stage)
+        cursor.execute(f"UPDATE document SET stage ='{stage}', tempstage = '{stage}' where doc_id='{id}'")
+    except Exception as e:
+        print(f"Error trying to set ECN stage. Error: {e}")
+
+
 def createDocument(document,elapsed="",waiting_on="",signing=""):
     if document['doc_reason'] is None:
         document['doc_reason']=""
@@ -270,7 +327,7 @@ def get_signature(id):
 @app.route('/comment/<id>/get', methods=['GET'])
 def get_comments(id):
     db,cursor = get_db()
-    cursor.execute(f"SELECT * FROM comments where doc_id='{id}'")
+    cursor.execute(f"SELECT * FROM comments where doc_id='{id}'order by comm_date asc")
     comments = cursor.fetchall()
     comment_list = []
     for comment in comments:
@@ -278,6 +335,19 @@ def get_comments(id):
         comment_list.append(c)
     json_str = jsonify([c.toJSON() for c in comment_list])
     return json_str
+
+@app.route('/comment/<id>/add',methods=['GET','POST'])
+def add_comment(id):
+    try:
+        data = request.get_json()
+        print('data',data['user'],data['comment'])
+        db,cursor = get_db()
+        set_data = (id, data['user'],datetime.now().strftime('%Y-%m-%d %H:%M:%S'),data['comment'],data['commentType'])
+        cursor.execute("INSERT INTO comments(doc_id, user_id, comm_date, comment,type) VALUES(%s,%s,%s,%s,%s)",(set_data))
+        return '200'
+    except Exception as e:
+        print(e)
+        return '500'
 
 @app.route('/document/approve/<id>',methods=['GET','POST'])
 def approve(id):
@@ -289,6 +359,32 @@ def approve(id):
         print(data)
         cursor.execute("UPDATE signatures SET signed_date = %s WHERE doc_id = %s and user_id = %s",(data))
         cursor.execute(f"UPDATE document SET last_modified = '{approvedate}' where doc_id='{id}'")
+        # checkComplete()
+        # db.commit()
+        # self.moveECNStage()
+        return '200'
+    except Exception as e:
+        print(e)
+        return '500'
+    
+@app.route('/document/reject/<id>',methods=['GET','POST'])
+def reject(id):
+    try:
+        data = request.get_json()
+        print('data',data['user'],data['comment'])
+        db,cursor = get_db()
+        
+        modifieddate = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        rej_data = (modifieddate, "Rejected",id)
+        cursor.execute("UPDATE document SET last_modified = %s, status = %s WHERE doc_id = %s",(rej_data))
+        cursor.execute(f"UPDATE signatures SET signed_date=Null where doc_id='{id}'")
+        
+        set_data = (id, data['user'],datetime.now().strftime('%Y-%m-%d %H:%M:%S'),data['comment'],data['commentType'])
+        cursor.execute("INSERT INTO comments(doc_id, user_id, comm_date, comment,type) VALUES(%s,%s,%s,%s,%s)",(set_data))
+        
+        # setECNStage(0)
+        # addNotification(self.id, "Rejected To Author",from_user=self.user_info['user'],msg=comment)
+        return '200'
         # checkComplete()
         # db.commit()
         # self.moveECNStage()

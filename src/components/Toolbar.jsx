@@ -1,7 +1,10 @@
-function Toolbar({signing,user,doc_id,setApproved}){
+import { useState } from "react"
+import CommentModal from "./CommentModal"
+import RejectionModal from "./RejectionModal"
 
+function Toolbar({signing,user,doc_id,setApproved,commentCount,setCommentCount}){
     const approve = () => {
-        console.log('toolbar link',import.meta.env.VITE_API_URL+'/document/approve/'+doc_id)
+        console.log('toolbar link - approved',import.meta.env.VITE_API_URL+'/document/approve/'+doc_id)
         fetch(import.meta.env.VITE_API_URL+'/document/approve/'+doc_id, {
             method: 'POST',
             headers: {
@@ -24,14 +27,21 @@ function Toolbar({signing,user,doc_id,setApproved}){
             })
     }
 
+
     if (signing=='y'){
         return(
             <div className="container mb-3">
                 <div>
                     {/* <button className="btn btn-secondary m-1" name="button" value="return">Return</button> */}
                     <button className="btn btn-success m-1" name="button" onClick={approve} value="approve">Approve</button>
-                    <button className="btn btn-danger m-1" name="button" value="reject" >Reject</button>
-                    <button className="btn btn-secondary m-1" name="button" value="add_comment">Add Comment</button>
+                    <button type="button" class="btn btn-danger m-1" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                    Reject
+                    </button>
+                    <RejectionModal></RejectionModal>
+                    <button type="button" class="btn btn-secondary m-1" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                    Add Comment
+                    </button>
+                    <CommentModal></CommentModal>
                 </div>
             </div>
         )
@@ -39,10 +49,15 @@ function Toolbar({signing,user,doc_id,setApproved}){
     }else{
         return (
             <div className="container mb-3">
-                <form method="post">
+                <div>
                     {/* <button className="btn btn-secondary m-1" name="button" value="return">Return</button> */}
-                    <button className="btn btn-secondary m-1" name="button" value="add_comment">Add Comment</button>
-                </form>
+                    <button type="button" class="btn btn-secondary m-1" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                    Add Comment
+                    </button>
+                    <CommentModal user={user} doc_id={doc_id} commentCount={commentCount} setCommentCount={setCommentCount}></CommentModal>
+
+
+                </div>
             </div>
         )
     }
